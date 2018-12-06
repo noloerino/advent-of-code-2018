@@ -1,36 +1,23 @@
 import java.io.File
 
-fun abs(n: Int): Int {
-    if (n >= 0) {
-        return n
-    } else {
-        return -n
-    }
-}
-
+val stacks = ('a'..'z').associateWith { mutableListOf<Char>() }
 fun main() {
     val line = File("input.txt").readLines()[0]
-    val m = ('a'..'z').associateWith { c ->
-        react(line.filter { it != c && it != c.toUpperCase() })
-    }
-    println(m.minBy { (_, v) -> v }!!.value)
-}
-
-fun react(s: String): Int {
-    val line = s.toMutableList()
-    var i = 0
-    while (i < line.size) {
-        // check against i-1
-        if (i > 0 && abs(line[i] - line[i - 1]) == 32) {
-            line.removeAt(i - 1)
-            line.removeAt(i - 1)
-            i--
-        } else if (i + 1 < line.size && abs(line[i] - line[i + 1]) == 32) {
-            line.removeAt(i)
-            line.removeAt(i)
-        } else {
-            i++
+    for (c in line) {
+        for ((k, v) in stacks) {
+            if (c.toLowerCase() != k) {
+                react(c, v)
+            }
         }
     }
-    return line.size
+    println(stacks.minBy { (_, s) -> s.size }!!.value.size)
+}
+
+fun react(c: Char, s: MutableList<Char>){
+    val d = s.lastOrNull()
+    if (d != null && c != d && c.toLowerCase() == d.toLowerCase()) {
+        s.removeAt(s.lastIndex)
+    } else {
+        s.add(c)
+    }
 }
